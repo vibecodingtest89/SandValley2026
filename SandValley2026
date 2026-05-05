@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sand Valley Golf Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #1a3a2a;
+    --green-mid: #2d5a3d;
+    --green-light: #3d7a52;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --cream: #f5f0e8;
+    --cream-dark: #ede5d5;
+    --white: #ffffff;
+    --text: #1a1a1a;
+    --text-muted: #5a5a5a;
+    --red: #8b2020;
+    --border: rgba(0,0,0,0.12);
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--green);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--green);
+    padding: 1.5rem 1.5rem 1rem;
+    text-align: center;
+    border-bottom: 2px solid var(--gold);
+  }
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    line-height: 1;
+  }
+  .header p {
+    color: var(--cream-dark);
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* MAIN WRAPPER */
+  .main {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  /* SCREENS */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--cream);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .card-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+
+  /* INPUTS */
+  label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px; }
+  input[type=text], input[type=number], select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    background: var(--white);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, select:focus { border-color: var(--green-mid); }
+
+  /* GRID HELPERS */
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .g4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-block;
+    padding: 10px 22px;
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+  .btn:hover { background: var(--cream-dark); }
+  .btn-gold {
+    background: var(--gold);
+    color: var(--green);
+    border-color: var(--gold);
+    font-weight: 500;
+  }
+  .btn-gold:hover { background: var(--gold-light); border-color: var(--gold-light); }
+  .btn-green {
+    background: var(--green-mid);
+    color: var(--cream);
+    border-color: var(--green-mid);
+  }
+  .btn-green:hover { background: var(--green-light); border-color: var(--green-light); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-full { width: 100%; text-align: center; }
+
+  /* HOME SCREEN */
+  .home-logo {
+    text-align: center;
+    padding: 2.5rem 0 2rem;
+  }
+  .home-logo .flag { font-size: 4rem; margin-bottom: 1rem; }
+  .home-logo h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+  .home-logo p { color: var(--cream-dark); font-size: 13px; margin-top: 6px; }
+  .home-actions { display: grid; gap: 12px; }
+  .home-btn {
+    background: var(--cream);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .home-btn:hover { border-color: var(--gold); }
+  .home-btn .icon { font-size: 2rem; }
+  .home-btn h3 { font-size: 15px; font-weight: 500; color: var(--text); }
+  .home-btn p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  /* JOIN */
+  .join-code-input {
+    font-size: 2rem;
+    text-align: center;
+    letter-spacing: 0.3em;
+    font-family: 'Bebas Neue', sans-serif;
+    text-transform: uppercase;
+  }
+
+  /* ROUND CODE DISPLAY */
+  .round-code-badge {
+    background: var(--green);
+    color: var(--gold);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    letter-spacing: 0.3em;
+    text-align: center;
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+    margin-bottom: 0.5rem;
+  }
+  .round-code-hint { font-size: 12px; color: var(--text-muted); text-align: center; }
+
+  /* PLAYER BUILDER */
+  .player-item {
+    display: grid;
+    grid-template-columns: 1fr 90px 90px 36px;
+    gap: 8px;
+    align-items: end;
+    margin-bottom: 8px;
+  }
+  .chcp-display {
+    background: var(--green);
+    color: var(--gold);
+    border-radius: var(--radius);
+    padding: 9px 12px;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+  }
+  .remove-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: 36px;
+    height: 38px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .remove-btn:hover { background: var(--cream-dark); color: var(--red); }
+
+  /* HOLE HANDICAP GRID */
+  .hi-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+  .hi-cell { text-align: center; }
+  .hi-cell label { font-size: 10px; text-align: center; }
+  .hi-cell input { padding: 6px 2px; text-align: center; font-size: 13px; }
+
+  /* SCORECARD */
+  .scorecard-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 600px; }
+  th {
+    padding: 7px 4px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  th:first-child { text-align: left; }
+  td {
+    padding: 5px 4px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  td:first-child { text-align: left; font-weight: 500; font-size: 12px; }
+  td input[type=number] {
+    width: 38px;
+    padding: 4px 2px;
+    text-align: center;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+  .dot {
+    display: inline-block;
+    width: 5px; height: 5px;
+    background: var(--green-mid);
+    border-radius: 50%;
+    vertical-align: super;
+    margin-left: 1px;
+  }
+  .stroke-row td { background: rgba(0,0,0,0.03); font-size: 11px; color: var(--text-muted); }
+
+  /* RESULTS */
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr)); gap: 10px; margin-bottom: 1rem; }
+  .metric { background: var(--green); border-radius: var(--radius); padding: 14px 12px; }
+  .metric-label { font-size: 11px; color: #8fb89f; margin-bottom: 4px; }
+  .metric-value { font-size: 1.6rem; font-family: 'Bebas Neue', sans-serif; color: var(--gold); letter-spacing: 0.05em; }
+  .metric-sub { font-size: 11px; color: #8fb89f; }
+
+  .result-table td.win { background: #d4edda; color: #1a5c2a; font-weight: 500; }
+  .result-table td.halved { background: #f0f0f0; color: #666; }
+  .result-table td.loss { background: #fde8e8; color: var(--red); }
+
+  .match-hole-row {
+    display: flex;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .match-hole-row .p1 { flex: 1; }
+  .match-hole-row .hole-mid { width: 100px; text-align: center; color: var(--text-muted); font-size: 11px; }
+  .match-hole-row .p2 { flex: 1; text-align: right; }
+  .match-hole-row .win-name { font-weight: 500; color: var(--green-mid); }
+
+  /* STATUS BAR */
+  .status-bar {
+    background: var(--green-mid);
+    color: var(--cream);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    font-size: 13px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .status-dot { width: 8px; height: 8px; background: var(--gold); border-radius: 50%; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* TABS */
+  .tabs { display: flex; gap: 6px; margin-bottom: 1rem; }
+  .tab {
+    flex: 1;
+    padding: 9px;
+    text-align: center;
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    background: var(--cream);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+  .tab.active { background: var(--green); color: var(--gold); border-color: var(--green); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--green);
+    color: var(--gold);
+    padding: 12px 24px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+    z-index: 999;
+    border: 1px solid var(--gold);
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .info-box {
+    background: rgba(0,0,0,0.05);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 1rem 0; }
+  .mt { margin-top: 1rem; }
+  .flex-end { display: flex; justify-content: flex-end; gap: 8px; }
+  .flex-gap { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .skin-winner { color: #1a5c2a; font-weight: 500; }
+  .skin-carry { color: var(--text-muted); font-style: italic; }
+
+  .back-link {
+    color: var(--cream-dark);
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+  }
+  .back-link:hover { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Sand Valley</h1>
+  <p>Golf Game Tracker</p>
+</div>
+
+<div class="main">
+
+  <!-- HOME -->
+  <div id="screen-home" class="screen active">
+    <div class="home-logo">
+      <div class="flag">⛳</div>
+      <h2>Game Tracker</h2>
+      <p>Skins &amp; match play with handicaps</p>
+    </div>
+    <div class="home-actions">
+      <div class="home-btn" onclick="showScreen('screen-new')">
+        <div class="icon">🏌️</div>
+        <div>
+          <h3>Start new round</h3>
+          <p>Set up course, players and game type</p>
+        </div>
+      </div>
+      <div class="home-btn" onclick="showScreen('screen-join')">
+        <div class="icon">🔗</div>
+        <div>
+          <h3>Join a round</h3>
+          <p>Enter a round code to join your group</p>
+        </div>
+      </div>
+      <div class="home-btn" onclick="showScreen('screen-history')">
+        <div class="icon">📋</div>
+        <div>
+          <h3>Round history</h3>
+          <p>View past rounds and results</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JOIN -->
+  <div id="screen-join" class="screen">
+    <span class="back-link" onclick="showScreen('screen-home')">← Back</span>
+    <div class="card">
+      <div class="card-title">Join a round</div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem">Enter the 6-letter code shared by whoever started the round.</p>
+      <label>Round code</label>
+      <input type="text" id="join-code" class="join-code-input" maxlength="6" placeholder="ABC123" oninput="this.value=this.value.toUpperCase()" />
+      <div class="mt">
+        <button class="btn btn-gold btn-full" onclick="joinRound()">Join round →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW ROUND SETUP -->
+  <div id="screen-new" class="screen">
+    <span class="back-link" onclick="showScreen('screen-home')">← Back</span>
+
+    <div class="card">
+      <div class="card-title">Course details</div>
+      <div class="g3" style="margin-bottom:12px">
+        <div><label>Course rating</label><input type="number" id="rating" step="0.1" value="72.4" /></div>
+        <div><label>Slope rating</label><input type="number" id="slope" value="131" /></div>
+        <div><label>Par</label><input type="number" id="par" value="72" /></div>
+      </div>
+      <div><label>Course name (optional)</label><input type="text" id="coursename" placeholder="e.g. Banff Springs — Rundle" /></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Game type</div>
+      <select id="gametype">
+        <option value="both">Skins + Match play</option>
+        <option value="skins">Skins only (0.5 stroke handicap)</option>
+        <option value="match">Match play only (full handicap)</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Players</div>
+      <div style="display:grid;grid-template-columns:1fr 90px 90px 36px;gap:8px;margin-bottom:6px">
+        <span style="font-size:11px;color:var(--text-muted)">Name</span>
+        <span style="font-size:11px;color:var(--text-muted)">Hcp index</span>
+        <span style="font-size:11px;color:var(--text-muted)">Course hcp</span>
+        <span></span>
+      </div>
+      <div id="player-rows"></div>
+      <button class="btn btn-sm" onclick="addPlayer()" style="margin-top:8px">+ Add player</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Hole stroke index (from scorecard)</div>
+      <div class="info-box">Enter the stroke index (1–18) for each hole as printed on the scorecard. This determines which holes players receive handicap strokes on.</div>
+      <div class="hi-grid" id="hi-front"></div>
+      <div class="hi-grid" id="hi-back"></div>
+    </div>
+
+    <button class="btn btn-gold btn-full" onclick="createRound()">Create round &amp; get code →</button>
+  </div>
+
+  <!-- ACTIVE ROUND -->
+  <div id="screen-round" class="screen">
+    <span class="back-link" onclick="showScreen('screen-home')">← Home</span>
+
+    <div class="status-bar">
+      <div class="status-dot"></div>
+      <span id="round-status-text">Round active</span>
+    </div>
+
+    <div class="card" style="text-align:center">
+      <div class="card-title">Share this code with your group</div>
+      <div class="round-code-badge" id="display-code">——</div>
+      <div class="round-code-hint">Anyone can join at this site and enter the code</div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('scorecard')">Scorecard</div>
+      <div class="tab" onclick="switchTab('results')">Results</div>
+      <div class="tab" onclick="switchTab('info')">Info</div>
+    </div>
+
+    <!-- SCORECARD TAB -->
+    <div id="tab-scorecard">
+      <div class="card">
+        <div class="card-title">Enter gross scores — <span id="stroke-summary" style="font-weight:400;text-transform:none;letter-spacing:0"></span></div>
+        <div class="scorecard-wrap">
+          <table id="scorecard-table"></table>
+        </div>
+        <div class="mt flex-end">
+          <button class="btn btn-green" onclick="saveScores()">Save scores</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS TAB -->
+    <div id="tab-results" style="display:none">
+      <div id="results-content"></div>
+    </div>
+
+    <!-- INFO TAB -->
+    <div id="tab-info" style="display:none">
+      <div class="card">
+        <div class="card-title">Round info</div>
+        <div id="round-info-content"></div>
+      </div>
+      <button class="btn btn-sm" style="color:var(--red);border-color:var(--red)" onclick="finishRound()">Mark round as complete</button>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="screen-history" class="screen">
+    <span class="back-link" onclick="showScreen('screen-home')">← Back</span>
+    <div class="card">
+      <div class="card-title">Past rounds</div>
+      <div id="history-list"><p style="color:var(--text-muted);font-size:13px">Loading...</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAWsfYej1m5YsI_MZRwepHmd76w9G5kyaY",
+  authDomain: "sandvalley-e4380.firebaseapp.com",
+  projectId: "sandvalley-e4380",
+  storageBucket: "sandvalley-e4380.firebasestorage.app",
+  messagingSenderId: "953590116162",
+  appId: "1:953590116162:web:a2b6d7c839441e34bd22db",
+  measurementId: "G-468BE425HS"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+window._db = db;
+window._fs = { doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, serverTimestamp };
+
+window._dbReady = true;
+console.log("Firebase ready");
+</script>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let players = [];
+let hiOrder = Array.from({length:18},(_,i)=>i+1);
+let currentRoundId = null;
+let currentRoundData = null;
+
+// ─── UTILITIES ────────────────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 'screen-history') loadHistory();
+}
+
+function toast(msg, dur=2500) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+
+function genCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length:6}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+}
+
+function calcCourseHcp(idx, slope, rating, par) {
+  return Math.round(idx * slope / 113 + (rating - par));
+}
+
+function getStrokesOnHole(courseHcp, holeHi) {
+  if (courseHcp <= 0) return 0;
+  return holeHi <= courseHcp ? 1 : 0;
+}
+
+function waitForDB(fn) {
+  if (window._dbReady) { fn(); return; }
+  const iv = setInterval(() => { if (window._dbReady) { clearInterval(iv); fn(); } }, 100);
+}
+
+// ─── PLAYER BUILDER ───────────────────────────────────────────────────────────
+function addPlayer() {
+  if (players.length >= 4) { toast('Maximum 4 players'); return; }
+  players.push({ name: 'Player ' + (players.length + 1), idx: 10, courseHcp: 0 });
+  renderPlayers();
+  updateCourseHcps();
+}
+
+function removePlayer(i) {
+  players.splice(i, 1);
+  renderPlayers();
+  updateCourseHcps();
+}
+
+function renderPlayers() {
+  const cont = document.getElementById('player-rows');
+  cont.innerHTML = players.map((p, i) => `
+    <div class="player-item">
+      <input type="text" value="${p.name}" oninput="players[${i}].name=this.value" placeholder="Player name" />
+      <input type="number" step="0.1" min="0" max="54" value="${p.idx}" oninput="players[${i}].idx=parseFloat(this.value)||0;updateCourseHcps()" placeholder="Index" />
+      <div class="chcp-display" id="chcp-${i}">${p.courseHcp}</div>
+      ${players.length > 1 ? `<button class="remove-btn" onclick="removePlayer(${i})">✕</button>` : '<div></div>'}
+    </div>
+  `).join('');
+}
+
+function updateCourseHcps() {
+  const slope = parseFloat(document.getElementById('slope')?.value) || 113;
+  const rating = parseFloat(document.getElementById('rating')?.value) || 72;
+  const par = parseFloat(document.getElementById('par')?.value) || 72;
+  players.forEach((p, i) => {
+    p.courseHcp = calcCourseHcp(p.idx, slope, rating, par);
+    const el = document.getElementById('chcp-' + i);
+    if (el) el.textContent = p.courseHcp;
+  });
+}
+
+// ─── HI GRID ──────────────────────────────────────────────────────────────────
+function buildHiGrid() {
+  ['hi-front','hi-back'].forEach((id, half) => {
+    const cont = document.getElementById(id);
+    if (!cont) return;
+    cont.innerHTML = '';
+    for (let h = half*9; h < half*9+9; h++) {
+      const d = document.createElement('div');
+      d.className = 'hi-cell';
+      d.innerHTML = `<label>H${h+1}</label><input type="number" min="1" max="18" value="${hiOrder[h]}" oninput="hiOrder[${h}]=parseInt(this.value)||${h+1}" />`;
+      cont.appendChild(d);
+    }
+  });
+}
+
+// ─── CREATE ROUND ─────────────────────────────────────────────────────────────
+function createRound() {
+  if (players.length < 2) { toast('Add at least 2 players'); return; }
+  updateCourseHcps();
+
+  const slope = parseFloat(document.getElementById('slope').value) || 113;
+  const rating = parseFloat(document.getElementById('rating').value) || 72;
+  const par = parseInt(document.getElementById('par').value) || 72;
+  const gameType = document.getElementById('gametype').value;
+  const courseName = document.getElementById('coursename').value || 'Golf Course';
+  const code = genCode();
+
+  const roundData = {
+    code,
+    courseName,
+    slope,
+    rating,
+    par,
+    gameType,
+    players: players.map(p => ({ name: p.name, idx: p.idx, courseHcp: p.courseHcp })),
+    hiOrder: [...hiOrder],
+    scores: {},
+    status: 'active',
+    createdAt: null
+  };
+
+  waitForDB(() => {
+    const { doc, setDoc, serverTimestamp } = window._fs;
+    const db = window._db;
+    roundData.createdAt = serverTimestamp();
+    setDoc(doc(db, 'rounds', code), roundData)
+      .then(() => {
+        currentRoundId = code;
+        currentRoundData = roundData;
+        loadRoundScreen(roundData);
+        toast('Round created! Code: ' + code);
+      })
+      .catch(e => { console.error(e); toast('Error creating round'); });
+  });
+}
+
+// ─── JOIN ROUND ───────────────────────────────────────────────────────────────
+function joinRound() {
+  const code = document.getElementById('join-code').value.trim().toUpperCase();
+  if (code.length < 4) { toast('Enter a valid round code'); return; }
+
+  waitForDB(() => {
+    const { doc, getDoc } = window._fs;
+    getDoc(doc(window._db, 'rounds', code))
+      .then(snap => {
+        if (!snap.exists()) { toast('Round not found'); return; }
+        const data = snap.data();
+        currentRoundId = code;
+        currentRoundData = data;
+        loadRoundScreen(data);
+      })
+      .catch(e => { console.error(e); toast('Error joining round'); });
+  });
+}
+
+// ─── LOAD ROUND SCREEN ────────────────────────────────────────────────────────
+function loadRoundScreen(data) {
+  document.getElementById('display-code').textContent = data.code;
+  document.getElementById('round-status-text').textContent =
+    data.status === 'complete' ? 'Round complete' : 'Round active — scores sync live';
+  buildRoundInfo(data);
+  buildScorecard(data);
+  calcResults(data);
+  showScreen('screen-round');
+  switchTab('scorecard');
+}
+
+function buildRoundInfo(data) {
+  const el = document.getElementById('round-info-content');
+  el.innerHTML = `
+    <div class="g2" style="margin-bottom:12px">
+      <div><label>Course</label><div style="font-size:14px;font-weight:500">${data.courseName}</div></div>
+      <div><label>Game type</label><div style="font-size:14px;font-weight:500">${{both:'Skins + Match',skins:'Skins',match:'Match play'}[data.gameType]}</div></div>
+      <div><label>Rating / Slope</label><div style="font-size:14px">${data.rating} / ${data.slope}</div></div>
+      <div><label>Par</label><div style="font-size:14px">${data.par}</div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="card-title" style="margin-bottom:8px">Players</div>
+    ${data.players.map(p => `
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px">
+        <span style="font-weight:500">${p.name}</span>
+        <span style="color:var(--text-muted)">Index ${p.idx} → Course hcp ${p.courseHcp}</span>
+      </div>
+    `).join('')}
+  `;
+}
+
+// ─── SCORECARD ────────────────────────────────────────────────────────────────
+function buildScorecard(data) {
+  const { players: ps, hiOrder: hi, scores } = data;
+
+  // stroke summary
+  document.getElementById('stroke-summary').textContent =
+    ps.map(p => `${p.name} (${p.courseHcp > 0 ? '+' : ''}${p.courseHcp} hcp)`).join(' · ');
+
+  const table = document.getElementById('scorecard-table');
+  const holeHeaders = Array.from({length:18},(_,i)=>`<th>${i+1}</th>`).join('');
+  const hiRow = hi.map(h=>`<td style="font-size:10px;color:var(--text-muted)">${h}</td>`).join('');
+
+  const playerRows = ps.map((p, pi) => {
+    const cells = Array.from({length:18}, (_, h) => {
+      const strokeHere = getStrokesOnHole(p.courseHcp, hi[h]);
+      const saved = scores[`${pi}-${h}`] ?? '';
+      return `<td>${strokeHere ? '<span class="dot"></span>' : ''}<br>
+        <input type="number" min="1" max="15" id="sc-${pi}-${h}" value="${saved}" placeholder="—" />
+      </td>`;
+    }).join('');
+
+    const total = Array.from({length:18}, (_, h) => {
+      const v = parseInt(scores[`${pi}-${h}`]);
+      return isNaN(v) ? 0 : v;
+    }).reduce((a,b)=>a+b,0);
+
+    return `<tr>
+      <td>${p.name}</td>
+      ${cells}
+      <td id="tot-${pi}" style="font-weight:500">${total||'—'}</td>
+    </tr>`;
+  }).join('');
+
+  table.innerHTML = `
+    <thead>
+      <tr><th>Player</th>${holeHeaders}<th>Total</th></tr>
+      <tr class="stroke-row"><td style="font-size:10px;color:var(--text-muted)">Stroke index</td>${hiRow}<td></td></tr>
+    </thead>
+    <tbody>${playerRows}</tbody>`;
+
+  // live totals
+  table.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', () => updateTotals(data));
+  });
+}
+
+function updateTotals(data) {
+  data.players.forEach((_, pi) => {
+    let sum = 0, count = 0;
+    for (let h = 0; h < 18; h++) {
+      const v = parseInt(document.getElementById(`sc-${pi}-${h}`)?.value);
+      if (!isNaN(v)) { sum += v; count++; }
+    }
+    const el = document.getElementById(`tot-${pi}`);
+    if (el) el.textContent = count > 0 ? sum : '—';
+  });
+  calcResults(data, true); // live update results
+}
+
+function saveScores() {
+  if (!currentRoundId) return;
+  const scores = {};
+  currentRoundData.players.forEach((_, pi) => {
+    for (let h = 0; h < 18; h++) {
+      const v = parseInt(document.getElementById(`sc-${pi}-${h}`)?.value);
+      if (!isNaN(v)) scores[`${pi}-${h}`] = v;
+    }
+  });
+  currentRoundData.scores = scores;
+
+  waitForDB(() => {
+    const { doc, updateDoc } = window._fs;
+    updateDoc(doc(window._db, 'rounds', currentRoundId), { scores })
+      .then(() => toast('Scores saved ✓'))
+      .catch(e => { console.error(e); toast('Save failed'); });
+  });
+}
+
+// ─── RESULTS ─────────────────────────────────────────────────────────────────
+function calcResults(data, silent=false) {
+  const { players: ps, hiOrder: hi, gameType } = data;
+
+  // pull live scores from inputs (or saved)
+  const getScore = (pi, h) => {
+    const inp = document.getElementById(`sc-${pi}-${h}`);
+    const v = inp ? parseInt(inp.value) : parseInt(data.scores[`${pi}-${h}`]);
+    return isNaN(v) ? null : v;
+  };
+
+  let html = '';
+  if (gameType === 'skins' || gameType === 'both') html += renderSkins(ps, hi, getScore);
+  if (gameType === 'match' || gameType === 'both') html += renderMatchPlay(ps, hi, getScore);
+
+  document.getElementById('results-content').innerHTML = html || '<div class="card"><p style="color:var(--text-muted);font-size:13px">Enter scores to see results.</p></div>';
+}
+
+function renderSkins(ps, hi, getScore) {
+  let carryover = 0;
+  const rows = [];
+  const totals = {};
+  ps.forEach(p => totals[p.name] = 0);
+
+  for (let h = 0; h < 18; h++) {
+    const holeScores = ps.map((p, pi) => {
+      const gross = getScore(pi, h);
+      if (gross === null) return null;
+      const strokes = getStrokesOnHole(p.courseHcp, hi[h]);
+      return { name: p.name, gross, net: gross - strokes * 0.5, strokes };
+    });
+
+    if (holeScores.some(s => s === null)) {
+      rows.push(`<tr><td>${h+1}</td><td colspan="3" style="color:var(--text-muted);font-size:12px">—</td></tr>`);
+      continue;
+    }
+
+    const minNet = Math.min(...holeScores.map(s => s.net));
+    const winners = holeScores.filter(s => s.net === minNet);
+
+    if (winners.length === 1) {
+      const w = winners[0];
+      const skinsWon = 1 + carryover;
+      totals[w.name] += skinsWon;
+      rows.push(`<tr>
+        <td>${h+1}</td>
+        <td class="skin-winner">${w.name}</td>
+        <td>${w.gross} (net ${w.net.toFixed(1)})</td>
+        <td class="skin-winner">${'★'.repeat(Math.min(skinsWon,5))} ${skinsWon}</td>
+      </tr>`);
+      carryover = 0;
+    } else {
+      rows.push(`<tr>
+        <td>${h+1}</td>
+        <td class="skin-carry" colspan="2">Halved — carry forward</td>
+        <td class="skin-carry">+${carryover+1}</td>
+      </tr>`);
+      carryover++;
+    }
+  }
+
+  const metricsHtml = ps.map(p => `
+    <div class="metric">
+      <div class="metric-label">${p.name}</div>
+      <div class="metric-value">${totals[p.name]}</div>
+      <div class="metric-sub">skin${totals[p.name]!==1?'s':''}</div>
+    </div>`).join('');
+
+  return `<div class="card">
+    <div class="card-title">Skins <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">— 0.5 stroke handicap · natural birdie always beats net birdie</span></div>
+    <div class="metrics">${metricsHtml}</div>
+    <div class="scorecard-wrap">
+      <table class="result-table">
+        <thead><tr><th>Hole</th><th>Winner</th><th>Score</th><th>Skins</th></tr></thead>
+        <tbody>${rows.join('')}</tbody>
+      </table>
+    </div>
+    ${carryover > 0 ? `<div class="info-box" style="margin-top:12px">⚠ ${carryover} skin${carryover>1?'s':''} carried from final hole — resolve per house rules.</div>` : ''}
+  </div>`;
+}
+
+function renderMatchPlay(ps, hi, getScore) {
+  if (ps.length < 2) return '';
+  const p0 = ps[0], p1 = ps[1];
+  const hcpDiff = Math.abs(p0.courseHcp - p1.courseHcp);
+  const higherIdx = p0.courseHcp > p1.courseHcp ? 0 : 1;
+
+  let status = 0;
+  const holeRows = [];
+  let played = 0;
+
+  for (let h = 0; h < 18; h++) {
+    const g0 = getScore(0, h), g1 = getScore(1, h);
+    if (g0 === null || g1 === null) {
+      holeRows.push(`<div class="match-hole-row"><span class="p1" style="color:var(--text-muted)">—</span><span class="hole-mid">H${h+1}</span><span class="p2" style="color:var(--text-muted)">—</span></div>`);
+      continue;
+    }
+    played++;
+    let adj0 = g0, adj1 = g1;
+    if (hi[h] <= hcpDiff) { if (higherIdx===0) adj0--; else adj1--; }
+
+    let delta = adj0 < adj1 ? -1 : adj1 < adj0 ? 1 : 0;
+    status += delta;
+
+    const statusStr = status === 0 ? 'AS' : Math.abs(status) + ' ' + (status > 0 ? p1.name : p0.name).split(' ')[0];
+    const w0 = delta === -1, w1 = delta === 1;
+
+    holeRows.push(`<div class="match-hole-row">
+      <span class="p1 ${w0?'win-name':''}">${g0}${adj0!==g0?'*':''} ${w0?'✓':''}</span>
+      <span class="hole-mid">H${h+1} · ${statusStr}</span>
+      <span class="p2 ${w1?'win-name':''}">${w1?'✓ ':''}${g1}${adj1!==g1?'*':''}</span>
+    </div>`);
+  }
+
+  const remaining = 18 - played;
+  const lastPlayed = played > 0;
+  let matchResult = '';
+  if (lastPlayed) {
+    if (status === 0) matchResult = `All square after ${played} holes`;
+    else {
+      const leader = status > 0 ? p1.name : p0.name;
+      const up = Math.abs(status);
+      matchResult = up > remaining
+        ? `${leader} wins ${up}&${remaining} — match over`
+        : `${leader} ${up} up with ${remaining} to play`;
+    }
+  }
+
+  return `<div class="card">
+    <div class="card-title">Match play — ${p0.name} vs ${p1.name}</div>
+    <div class="info-box">${p0.name} hcp ${p0.courseHcp} · ${p1.name} hcp ${p1.courseHcp} · ${hcpDiff > 0 ? `${ps[higherIdx].name} gets a stroke on holes ranked 1–${hcpDiff}` : 'No strokes given (equal handicap)'}</div>
+    ${matchResult ? `<div style="font-size:15px;font-weight:500;padding:12px;background:var(--green);color:var(--gold);border-radius:var(--radius);margin-bottom:1rem;font-family:'Bebas Neue',sans-serif;letter-spacing:0.05em;font-size:1.3rem">${matchResult}</div>` : ''}
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);padding:4px 0;border-bottom:1px solid var(--border);margin-bottom:4px;font-weight:500">
+      <span>${p0.name}</span><span>Hole · Status</span><span>${p1.name}</span>
+    </div>
+    ${holeRows.join('')}
+    <p style="font-size:11px;color:var(--text-muted);margin-top:8px">* adjusted for handicap stroke</p>
+  </div>`;
+}
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  const tabs = ['scorecard','results','info'];
+  document.querySelectorAll('.tab').forEach((el,i) => el.classList.toggle('active', tabs[i]===tab));
+  tabs.forEach(t => {
+    const el = document.getElementById(`tab-${t}`);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+  });
+}
+
+// ─── FINISH ROUND ─────────────────────────────────────────────────────────────
+function finishRound() {
+  if (!currentRoundId) return;
+  saveScores();
+  waitForDB(() => {
+    const { doc, updateDoc } = window._fs;
+    updateDoc(doc(window._db, 'rounds', currentRoundId), { status: 'complete' })
+      .then(() => { toast('Round marked complete'); document.getElementById('round-status-text').textContent = 'Round complete'; })
+      .catch(e => console.error(e));
+  });
+}
+
+// ─── HISTORY ──────────────────────────────────────────────────────────────────
+function loadHistory() {
+  const el = document.getElementById('history-list');
+  el.innerHTML = '<p style="color:var(--text-muted);font-size:13px">Loading...</p>';
+  waitForDB(() => {
+    const { collection, query, orderBy, limit, getDocs } = window._fs;
+    const db = window._db;
+    getDocs(query(collection(db, 'rounds'), orderBy('createdAt','desc'), limit(20)))
+      .then(snap => {
+        if (snap.empty) { el.innerHTML = '<p style="color:var(--text-muted);font-size:13px">No rounds yet.</p>'; return; }
+        el.innerHTML = snap.docs.map(d => {
+          const r = d.data();
+          const date = r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString('en-CA') : 'Unknown date';
+          return `<div style="padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="loadRoundByCode('${r.code}')">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:500;font-size:14px">${r.courseName||'Golf Course'}</div>
+                <div style="font-size:12px;color:var(--text-muted)">${r.players.map(p=>p.name).join(', ')} · ${date}</div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <span style="font-size:11px;background:${r.status==='complete'?'#d4edda':'#fff3cd'};color:${r.status==='complete'?'#1a5c2a':'#856404'};padding:3px 8px;border-radius:999px">${r.status==='complete'?'Complete':'Active'}</span>
+                <span style="font-family:'Bebas Neue',sans-serif;color:var(--green-mid);letter-spacing:0.1em">${r.code}</span>
+              </div>
+            </div>
+          </div>`;
+        }).join('');
+      })
+      .catch(e => { console.error(e); el.innerHTML = '<p style="color:var(--text-muted);font-size:13px">Could not load history.</p>'; });
+  });
+}
+
+function loadRoundByCode(code) {
+  waitForDB(() => {
+    const { doc, getDoc } = window._fs;
+    getDoc(doc(window._db, 'rounds', code))
+      .then(snap => {
+        if (!snap.exists()) { toast('Round not found'); return; }
+        currentRoundId = code;
+        currentRoundData = snap.data();
+        loadRoundScreen(currentRoundData);
+      });
+  });
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+window.showScreen = showScreen;
+window.addPlayer = addPlayer;
+window.removePlayer = removePlayer;
+window.updateCourseHcps = updateCourseHcps;
+window.createRound = createRound;
+window.joinRound = joinRound;
+window.saveScores = saveScores;
+window.switchTab = switchTab;
+window.finishRound = finishRound;
+window.loadRoundByCode = loadRoundByCode;
+
+addPlayer();
+addPlayer();
+buildHiGrid();
+</script>
+</body>
+</html>
